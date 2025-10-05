@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset=utf-8 />
+	<title>Map Template Browser Title</title>
+	<meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.css" />
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.1/dist/leaflet.css" />
+	<link href="https://fonts.googleapis.com/css?family=Noto+Sans" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Lora" rel="stylesheet">
+
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			background: "whitesmoke";
+			font-family: "Noto Sans", sans-serif;
+			color: #3d3d3d;
+		}
+
+		h1 {
+			position: absolute;
+			margin-top: 0;
+			top: 10px;
+			left: 45px;
+			font-size: 2em;
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+			padding: 10px 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		h2 {
+			font-family: "Lora", serif;
+			letter-spacing: .04em;
+		}
+
+		#map {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			width: 100%;
+		}
+
+		section {
+			position: absolute;
+			bottom: 0;
+			left: 10px;
+			width: 280px;
+			margin: 20px auto;
+			padding: 0 15px;
+			background: rgba(256, 256, 256);
+			border: 1px solid grey;
+			border-radius: 3px;
+			z-index: 800;
+		}
+
+		p {
+			font-size: .9em;
+			line-height: 1.5em;
+		}
+
+		a {
+			color: #005daa;
+			text-decoration: none;
+		}
+
+		a:hover {
+			text-decoration: underline;
+		}
+	</style>
+</head>
+
+<body>
+
+	<h1>Mountain Biking in DuPont State Recreational Forest</h1>
+
+	<div id='map'></div>
+
+	<section>
+		<h2>Trail Notes</h2>
+
+		<p>Biking is welcome on nearly all DuPont State Recreational Forest (DSRF) trails. However, riders must be careful to control their speed at all times and not endanger or disrupt other visitors' use of the forest.​ DSRF is not a bike park, the trai​ls are for multiple uses. You may encounter equestrians, hikers and other bike riders. Electric bicycles, including pedal-assist, are not allowed on DSRF roads or trails.
+		
+		<p>This route includes the following trails and roads:
+			 <ul>
+  				<li>Jim Branch</li>
+  				<li>Isaac Heath</li>
+  				<li>Hilltop</li>
+				<li>Buck Forest Road</li>
+				<li>Hooker Creek</li>
+				<li>Ridgeline</li>
+			</ul> 
+		</p>
+
+		<p>Information provided by <a href="https://www.ncagr.gov/divisions/nc-forest-service/state-forests/dupont-state-recreational-forest/explore-the-forest/biking" target="_blank">the NCFS.</a></p>
+		<p>Map authored by Dakota Wagner</p>
+
+	</section>
+
+	<script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+	<script src="https://unpkg.com/leaflet@1.0.1/dist/leaflet.js"></script>
+    
+    <script src="data/route.js"></script>
+    <!--remember this is an html comment. Above is where we connected the route js-->
+
+	<script>
+
+//options to be used when creating the map
+		var options = {
+			center: [35.205465, -82.606190],
+			zoom: 14
+		}
+
+//creation of the Leaflet map
+		var map = L.map('map', options);
+
+//request to load basemap
+var Thunderforest_OpenCycleMap = L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}{r}.png?apikey={apikey}', {
+	attribution: '&copy; <a href="http://www.thunderforest.com/">Thunderforest</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+	apikey: '68d4bcb7c96e42ff85f90fe1b9d1c8cd',
+	maxZoom: 22
+}).addTo(map);
+
+//create a custom line feature
+var myRoute = L.geoJson(data, {
+    filter: function(feature) {
+        if(feature.geometry.type == "LineString"){
+            return feature;
+        }
+    },
+    style: function(feature) {
+        return {
+            color: "#cc5500",
+            weight: 6,
+            opacity: 0.5,
+            dashArray: "5, 10" //specifies the size of the dash, the gap
+        }
+    }
+}).addTo(map);
+
+var myStops = L.geoJson(data, {
+    filter: function(feature) {
+        if(feature.geometry.type == "Point") {
+            return feature;
+        }
+    },
+
+    onEachFeature: function(feature, layer) {
+        layer.bindTooltip(feature.properties['name']);
+    }
+}).addTo(map);
+
+//map.fitBounds(myRoute.getBounds());
+
+	</script>
+
+</body>
+
+</html>
